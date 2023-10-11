@@ -27,7 +27,7 @@ class BookController extends AbstractController
         ]);
     }
 
-    #[Route('/book/search/{text}', name: 'app_book')]
+    #[Route('/book/search/{text}', name: 'search_book')]
     public function search($text): Response
     {
         $books = array_filter($this->books, function ($book) use ($text){
