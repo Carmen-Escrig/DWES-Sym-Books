@@ -1,0 +1,18 @@
+<!doctype html>
+
+<html>
+
+<meta charset="utf-8">
+<body>
+    {% if book %}
+        <h1>{{book.titulo}}</h1>
+        <ul>
+            <li><strong>Autor: </strong>{{ book.autor}}</li>
+            <li><strong>Editorial: </strong>{{ book.editorial}}</li>
+            <li><strong>Paginas: </strong>{{ book.paginas}}</li>
+        </ul>
+    {% else %}
+        <h3>Libro no encontrado</h3>
+    {% endif %}
+</body>
+</html>
