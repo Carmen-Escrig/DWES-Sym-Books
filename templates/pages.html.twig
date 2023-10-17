@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Books{% endblock %}
+
+{% block body %}
+
+    <h1>Libros con más de {{ paginas }} paginas </h1>
+
+    {% if books %}
+        {% for book in books %}
+            {{ include ('partials/book_data.html.twig', {'book': book }) }}
+        {% endfor %}
+    {% else %}
+        <h3>No hay libros con más de  {{paginas}} paginas.</h3>
+    {% endif %}
+
+{% endblock %}

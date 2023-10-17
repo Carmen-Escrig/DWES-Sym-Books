@@ -3,4 +3,9 @@
             <li><strong>Autor: </strong>{{ book.autor}}</li>
             <li><strong>Editorial: </strong>{{ book.editorial}}</li>
             <li><strong>Paginas: </strong>{{ book.paginas}}</li>
+            {% if book.colection %}
+                <li><strong>colection: </strong>{{ book.colection.name}}</li>
+            {% endif %}
+            
+
         </ul>
