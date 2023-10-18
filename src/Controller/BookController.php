@@ -8,6 +8,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Book;
 use App\Entity\Colection;
 use Doctrine\Persistence\ManagerRegistry;
+use SebastianBergmann\CodeCoverage\Report\Xml\Report;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\Request;
 
 class BookController extends AbstractController
 {
@@ -18,7 +24,88 @@ class BookController extends AbstractController
         5 => ["titulo" => "Cazadora de Hadas", "autor" => "Chris J. Hans", "editorial" => "Nocturna", "paginas" => "246"],
         7 => ["titulo" => "Chicas como Nosotras", "autor" => "Loren K. Jons", "editorial" => "Planeta", "paginas" => "354"],
         9 => ["titulo" => "Heima es hogar en islandés", "autor" => "Andrea Tomé", "editorial" => "Nocturna", "paginas" => "386"]
-    ]; 
+    ];
+    
+    #[Route('/book/nuevo', name: 'nuevo_book')]
+    public function nuevo(ManagerRegistry $doctrine, Request $request): Response
+    {
+        $book = new Book();
+
+        $form = $this->createFormBuilder($book)
+            ->add('titulo', TextType::class)
+            ->add('autor', TextType::class)
+            ->add('editorial', TextType::class)
+            ->add('paginas', NumberType::class)
+            ->add('colection', EntityType::class, array(
+                'class' => Colection::class,
+                'choice_label' => 'name',
+                'placeholder' => '',
+                'required' => false,))
+            ->add('save', SubmitType::class, array('label' => 'Enviar'))
+            ->getForm();
+
+            $form->handleRequest($request);
+
+            if($form->isSubmitted() && $form->isValid()) {
+                $book = $form->getData();
+                $entityManager = $doctrine->getManager();
+                $entityManager->persist($book);
+
+                try {
+                    $entityManager->flush();
+                    return $this->redirectToRoute('app_book', [
+                        "id" => $book->getId()
+                    ]);
+                } catch (\Exception $e) {
+                    return new Response("Error" . $e->getMessage());
+                }
+            }
+
+            return $this->render('form.html.twig', array(
+                'formulario' => $form->createView()
+            ));
+    }
+
+    #[Route('/book/edit/{id}', name: 'edit_book')]
+    public function edit(ManagerRegistry $doctrine, Request $request, $id): Response
+    {
+        $repositorio = $doctrine->getRepository(Book::class);
+        $book = $repositorio->find($id);
+
+        $form = $this->createFormBuilder($book)
+            ->add('titulo', TextType::class)
+            ->add('autor', TextType::class)
+            ->add('editorial', TextType::class)
+            ->add('paginas', NumberType::class)
+            ->add('colection', EntityType::class, array(
+                'class' => Colection::class,
+                'choice_label' => 'name',
+                'placeholder' => '',
+                'required' => false,))
+            ->add('save', SubmitType::class, array('label' => 'Enviar'))
+            ->getForm();
+
+            $form->handleRequest($request);
+
+            if($form->isSubmitted() && $form->isValid()) {
+                $book = $form->getData();
+                $entityManager = $doctrine->getManager();
+                $entityManager->persist($book);
+
+                try {
+                    $entityManager->flush();
+                    return $this->redirectToRoute('app_book', [
+                        "id" => $book->getId()
+                    ]);
+                } catch (\Exception $e) {
+                    return new Response("Error" . $e->getMessage());
+                }
+            }
+
+            return $this->render('form.html.twig', array(
+                'formulario' => $form->createView()
+            ));
+    }
 
     #[Route('/book/insert', name: 'insert_book')]
     public function insert(ManagerRegistry $doctrine): Response
