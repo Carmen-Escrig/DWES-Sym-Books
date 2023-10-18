@@ -16,9 +16,9 @@ class Book
     #[ORM\Column(length: 255)]
     private ?string $titulo = null;
 
-    #[ORM\Column(length: 255)]
+    /* #[ORM\Column(length: 255)]
     private ?string $autor = null;
-
+ */
     #[ORM\Column(length: 255)]
     private ?string $editorial = null;
 
@@ -27,6 +27,9 @@ class Book
 
     #[ORM\ManyToOne(inversedBy: 'books')]
     private ?Colection $colection = null;
+
+    #[ORM\ManyToOne(inversedBy: 'books')]
+    private ?Author $autor = null;
 
     public function getId(): ?int
     {
@@ -45,7 +48,7 @@ class Book
         return $this;
     }
 
-    public function getAutor(): ?string
+    /* public function getAutor(): ?string
     {
         return $this->autor;
     }
@@ -55,7 +58,7 @@ class Book
         $this->autor = $autor;
 
         return $this;
-    }
+    } */
 
     public function getEditorial(): ?string
     {
@@ -89,6 +92,18 @@ class Book
     public function setColection(?Colection $colection): static
     {
         $this->colection = $colection;
+
+        return $this;
+    }
+
+    public function getAutor(): ?Author
+    {
+        return $this->autor;
+    }
+
+    public function setAutor(?Author $autor): static
+    {
+        $this->autor = $autor;
 
         return $this;
     }
