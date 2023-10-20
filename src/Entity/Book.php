@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\BookRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: BookRepository::class)]
 class Book
@@ -14,21 +15,22 @@ class Book
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'El nombre es obligatorio')]
     private ?string $titulo = null;
 
-    /* #[ORM\Column(length: 255)]
-    private ?string $autor = null;
- */
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'La editorial es obligatoria')]
     private ?string $editorial = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'Las páginas son obligatorias')]
     private ?int $paginas = null;
 
     #[ORM\ManyToOne(inversedBy: 'books')]
     private ?Colection $colection = null;
 
     #[ORM\ManyToOne(inversedBy: 'books')]
+    #[Assert\NotBlank(message: 'El autor es obligatorio')]
     private ?Author $autor = null;
 
     public function getId(): ?int
@@ -41,31 +43,20 @@ class Book
         return $this->titulo;
     }
 
-    public function setTitulo(string $titulo): static
+    public function setTitulo(string $titulo): self
     {
         $this->titulo = $titulo;
 
         return $this;
     }
 
-    /* public function getAutor(): ?string
-    {
-        return $this->autor;
-    }
-
-    public function setAutor(string $autor): static
-    {
-        $this->autor = $autor;
-
-        return $this;
-    } */
 
     public function getEditorial(): ?string
     {
         return $this->editorial;
     }
 
-    public function setEditorial(string $editorial): static
+    public function setEditorial(string $editorial): self
     {
         $this->editorial = $editorial;
 
@@ -77,7 +68,7 @@ class Book
         return $this->paginas;
     }
 
-    public function setPaginas(int $paginas): static
+    public function setPaginas(int $paginas): self
     {
         $this->paginas = $paginas;
 

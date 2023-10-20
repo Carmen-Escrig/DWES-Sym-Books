@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Colections{% endblock %}
+
+{% block body %}
+
+    <h3>Colections</h3>
+
+    {% if colections %}
+        <ul>
+        {% for colection in colections %}
+            <li>{{ colection.name }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <h3>No se ha encontrado ninguna coleccion</h3>
+    {% endif %}
+
+{% endblock %}

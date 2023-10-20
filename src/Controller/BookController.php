@@ -8,12 +8,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Book;
 use App\Entity\Colection;
+use App\Form\AuthorFormType;
+use App\Form\BookFormType;
+use App\Form\ColectionFormType;
+
 use Doctrine\Persistence\ManagerRegistry;
-use SebastianBergmann\CodeCoverage\Report\Xml\Report;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 
 class BookController extends AbstractController
@@ -27,27 +26,12 @@ class BookController extends AbstractController
         9 => ["titulo" => "Heima es hogar en islandés", "autor" => "Andrea Tomé", "editorial" => "Nocturna", "paginas" => "386"]
     ];
     
-    #[Route('/book/nuevo', name: 'nuevo_book')]
-    public function nuevo(ManagerRegistry $doctrine, Request $request): Response
+    #[Route('/book/new', name: 'new_book')]
+    public function new(ManagerRegistry $doctrine, Request $request): Response
     {
         $book = new Book();
 
-        $form = $this->createFormBuilder($book)
-            ->add('titulo', TextType::class)
-            ->add('autor', EntityType::class, array(
-                'class' => Author::class,
-                'choice_label' => 'name',
-                'placeholder' => '',
-                'required' => true,))
-            ->add('editorial', TextType::class)
-            ->add('paginas', NumberType::class)
-            ->add('colection', EntityType::class, array(
-                'class' => Colection::class,
-                'choice_label' => 'name',
-                'placeholder' => '',
-                'required' => false,))
-            ->add('save', SubmitType::class, array('label' => 'Enviar'))
-            ->getForm();
+        $form = $this->createForm(BookFormType::class, $book);
 
             $form->handleRequest($request);
 
@@ -77,22 +61,7 @@ class BookController extends AbstractController
         $repositorio = $doctrine->getRepository(Book::class);
         $book = $repositorio->find($id);
 
-        $form = $this->createFormBuilder($book)
-            ->add('titulo', TextType::class)
-            ->add('autor', EntityType::class, array(
-                'class' => Author::class,
-                'choice_label' => 'name',
-                'placeholder' => '',
-                'required' => true,))
-            ->add('editorial', TextType::class)
-            ->add('paginas', NumberType::class)
-            ->add('colection', EntityType::class, array(
-                'class' => Colection::class,
-                'choice_label' => 'name',
-                'placeholder' => '',
-                'required' => false,))
-            ->add('save', SubmitType::class, array('label' => 'Enviar'))
-            ->getForm();
+        $form = $this->createForm(BookFormType::class, $book);
 
             $form->handleRequest($request);
 
@@ -258,4 +227,155 @@ class BookController extends AbstractController
             'paginas' => $pages
         ]);
     }
+
+    #[Route('/author/new', name: 'new_author')]
+    public function newAuthor(ManagerRegistry $doctrine, Request $request): Response
+    {
+        $author = new author();
+
+        $form = $this->createForm(AuthorFormType::class, $author);
+
+            $form->handleRequest($request);
+
+            if($form->isSubmitted() && $form->isValid()) {
+                $author = $form->getData();
+                $entityManager = $doctrine->getManager();
+                $entityManager->persist($author);
+
+                try {
+                    $entityManager->flush();
+                    return $this->redirectToRoute('app_author', [
+                        "id" => $author->getId()
+                    ]);
+                } catch (\Exception $e) {
+                    return new Response("Error" . $e->getMessage());
+                }
+            }
+
+            return $this->render('form_author.html.twig', array(
+                'formulario' => $form->createView()
+            ));
+    }
+
+    #[Route('/author/edit/{id}', name: 'edit_Author')]
+    public function editAuthor(ManagerRegistry $doctrine, Request $request, $id): Response
+    {
+        $repositorio = $doctrine->getRepository(Author::class);
+        $author = $repositorio->find($id);
+
+        $form = $this->createForm(AuthorFormType::class, $author);
+
+            $form->handleRequest($request);
+
+            if($form->isSubmitted() && $form->isValid()) {
+                $author = $form->getData();
+                $entityManager = $doctrine->getManager();
+                $entityManager->persist($author);
+
+                try {
+                    $entityManager->flush();
+                    return $this->redirectToRoute('app_author', [
+                        "id" => $author->getId()
+                    ]);
+                } catch (\Exception $e) {
+                    return new Response("Error" . $e->getMessage());
+                }
+            }
+
+            return $this->render('form_author.html.twig', array(
+                'formulario' => $form->createView()
+            ));
+    }
+
+    #[Route('/author/{id}', name: 'app_author')]
+    public function author(ManagerRegistry $doctrine, int $id): Response
+    {
+        $repositorio = $doctrine->getRepository(Author::class);
+        $author = $repositorio->find($id);
+
+        if ($author) {
+            return $this->render('author.html.twig', [
+                'author' => $author
+            ]);
+        } else {
+            return $this->render('author.html.twig', [
+                'author' => null
+            ]);
+        }
+        
+    }
+
+    #[Route('/colection/new', name: 'new_colection')]
+    public function newcolection(ManagerRegistry $doctrine, Request $request): Response
+    {
+        $colection = new Colection();
+
+        $form = $this->createForm(ColectionFormType::class, $colection);
+
+            $form->handleRequest($request);
+
+            if($form->isSubmitted() && $form->isValid()) {
+                $colection = $form->getData();
+                $entityManager = $doctrine->getManager();
+                $entityManager->persist($colection);
+
+                try {
+                    $entityManager->flush();
+                    return $this->redirectToRoute('app_colections');
+                } catch (\Exception $e) {
+                    return new Response("Error" . $e->getMessage());
+                }
+            }
+
+            return $this->render('form_colection.html.twig', array(
+                'formulario' => $form->createView()
+            ));
+    }
+
+    #[Route('/colection/edit/{id}', name: 'edit_colection')]
+    public function editcolection(ManagerRegistry $doctrine, Request $request, $id): Response
+    {
+        $repositorio = $doctrine->getRepository(Colection::class);
+        $colection = $repositorio->find($id);
+
+        $form = $this->createForm(ColectionFormType::class, $colection);
+
+            $form->handleRequest($request);
+
+            if($form->isSubmitted() && $form->isValid()) {
+                $colection = $form->getData();
+                $entityManager = $doctrine->getManager();
+                $entityManager->persist($colection);
+
+                try {
+                    $entityManager->flush();
+                    return $this->redirectToRoute('app_colections');
+                } catch (\Exception $e) {
+                    return new Response("Error" . $e->getMessage());
+                }
+            }
+
+            return $this->render('form_colection.html.twig', array(
+                'formulario' => $form->createView()
+            ));
+    }
+
+    #[Route('/colections', name: 'app_colections')]
+    public function colections(ManagerRegistry $doctrine): Response
+    {
+        $repositorio = $doctrine->getRepository(Colection::class);
+        $colections = $repositorio->findAll();
+
+        if ($colections) {
+            return $this->render('colections.html.twig', [
+                'colections' => $colections
+            ]);
+        } else {
+            return $this->render('colections.html.twig', [
+                'colections' => null
+            ]);
+        }
+        
+    }
+
 }

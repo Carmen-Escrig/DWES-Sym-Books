@@ -1,0 +1,12 @@
+<h1>{{author.name}}</h1>
+        <ul>
+            <li><strong>Nombre: </strong>{{ author.name}}</li>
+            <li><strong>Teléfono: </strong>{{ author.telephone}}</li>
+            <li><strong>Email: </strong>{{ author.email}}</li>
+            {% if author.books %}
+                <strong>Libros: </strong>
+                {% for book in author.books %}
+                    <li>{{ book.titulo}}</li>
+                {% endfor %}
+            {% endif %}
+        </ul>
