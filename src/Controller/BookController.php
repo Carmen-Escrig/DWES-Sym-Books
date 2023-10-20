@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Author;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -33,7 +34,11 @@ class BookController extends AbstractController
 
         $form = $this->createFormBuilder($book)
             ->add('titulo', TextType::class)
-            ->add('autor', TextType::class)
+            ->add('autor', EntityType::class, array(
+                'class' => Author::class,
+                'choice_label' => 'name',
+                'placeholder' => '',
+                'required' => true,))
             ->add('editorial', TextType::class)
             ->add('paginas', NumberType::class)
             ->add('colection', EntityType::class, array(
@@ -74,7 +79,11 @@ class BookController extends AbstractController
 
         $form = $this->createFormBuilder($book)
             ->add('titulo', TextType::class)
-            ->add('autor', TextType::class)
+            ->add('autor', EntityType::class, array(
+                'class' => Author::class,
+                'choice_label' => 'name',
+                'placeholder' => '',
+                'required' => true,))
             ->add('editorial', TextType::class)
             ->add('paginas', NumberType::class)
             ->add('colection', EntityType::class, array(
@@ -115,7 +124,6 @@ class BookController extends AbstractController
         foreach ($this->books as $b) {
             $book = new Book();
             $book->setTitulo($b["titulo"]);
-            $book->setAutor($b["autor"]);
             $book->setEditorial($b["editorial"]);
             $book->setPaginas($b["paginas"]);
             $entityManager->persist($book);
