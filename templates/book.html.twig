@@ -6,6 +6,7 @@
 
     {% if book %}
         {{ include ('partials/book_data.html.twig', {'book': book }) }}
+        <button><a href="http://127.0.0.1:8080/book/edit/{{book.id}}">Editar</a></button>
     {% else %}
         <h3>Libro no encontrado</h3>
     {% endif %}

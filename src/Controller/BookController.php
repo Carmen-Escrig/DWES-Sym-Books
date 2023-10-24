@@ -6,6 +6,8 @@ use App\Entity\Author;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+
 use App\Entity\Book;
 use App\Entity\Colection;
 use App\Form\AuthorFormType;
@@ -58,14 +60,25 @@ class BookController extends AbstractController
     #[Route('/book/edit/{id}', name: 'edit_book')]
     public function edit(ManagerRegistry $doctrine, Request $request, $id): Response
     {
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_login', [
+            ]);
+        }
         $repositorio = $doctrine->getRepository(Book::class);
         $book = $repositorio->find($id);
 
         $form = $this->createForm(BookFormType::class, $book);
+        $form->add('delete', SubmitType::class, array('label' => 'Borrar'));
+            
 
             $form->handleRequest($request);
 
             if($form->isSubmitted() && $form->isValid()) {
+                if($form->get('delete')->isClicked()) {
+                    return $this->redirectToRoute('delete_book', [
+                        "id" => $book->getId()
+                    ]);
+                }
                 $book = $form->getData();
                 $entityManager = $doctrine->getManager();
                 $entityManager->persist($book);
@@ -173,7 +186,8 @@ class BookController extends AbstractController
             {
                 $entityManager->remove($book);
                 $entityManager->flush();
-                return new Response("Libro eliminado");
+                return $this->redirectToRoute('inicio', [
+                ]);
             } catch (\Exception $e) {
                 return new Response("Error eliminando el objeto. " . $e->getMessage());
             } 

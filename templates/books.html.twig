@@ -6,7 +6,7 @@
 
     {% if books %}
         {% for book in books %}
-            {{ include ('partials/book_data.html.twig', {'book': book }) }}
+            {{ include ('partials/book_data_link.html.twig', {'book': book }) }}
         {% endfor %}
     {% else %}
         <h3>Libro con el título: {{text}} no encontrado</h3>
