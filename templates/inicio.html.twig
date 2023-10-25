@@ -1,15 +1,23 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Books{% endblock %}
+{% block title %}Books
+{% endblock %}
 
 {% block body %}
 
-    <h1>Book</h1>
-    <h3>Bienvido a la web de libros</h3>
-    <p>Pagina de inicio</p>
+	<h1>Book</h1>
 
-    {{ include ('books.html.twig', {'books': books }) }}
+	{% if app.user %}
+		<h3>Bienvido {{ app.user.email }} a la web de libros</h3>
+	{% else %}
+		<h3>Bienvido a la web de libros</h3>
 
+	{% endif %}
+
+
+	<p>Pagina de inicio</p>
+
+	{{ include ('books.html.twig', {'books': books }) }}
 
 
 {% endblock %}

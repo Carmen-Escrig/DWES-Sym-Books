@@ -16,6 +16,7 @@ use App\Form\ColectionFormType;
 
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class BookController extends AbstractController
 {
@@ -58,9 +59,11 @@ class BookController extends AbstractController
     }
 
     #[Route('/book/edit/{id}', name: 'edit_book')]
-    public function edit(ManagerRegistry $doctrine, Request $request, $id): Response
+    public function edit(ManagerRegistry $doctrine, Request $request, $id, SessionInterface $session): Response
     {
         if(!$this->getUser()) {
+            $session->set('redirect', '/book/edit/' . $id);
+            
             return $this->redirectToRoute('app_login', [
             ]);
         }
