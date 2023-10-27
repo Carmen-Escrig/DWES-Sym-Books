@@ -21,9 +21,12 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Security\Http\Util\TargetPathTrait;
+
 
 class BookController extends AbstractController
 {
+    use TargetPathTrait;
     private $books = [
         1 => ["titulo" => "El Reino Perdido", "autor" => "Jeniffer H. Lowner", "editorial" => "Planeta", "paginas" => "329"],
         2 => ["titulo" => "Memorias de Idhún I", "autor" => "Laura Gallego", "editorial" => "Santillana", "paginas" => "527"],
@@ -65,12 +68,16 @@ class BookController extends AbstractController
     #[Route('/book/edit/{id}', name: 'edit_book')]
     public function edit(ManagerRegistry $doctrine, Request $request, $id, SessionInterface $session, SluggerInterface $slugger): Response
     {
-        if(!$this->getUser()) {
+        /* if(!$this->getUser()) {
             $session->set('redirect', '/book/edit/' . $id);
             
             return $this->redirectToRoute('app_login', [
             ]);
-        }
+        } */
+        
+        $this->saveTargetPath($session, 'main', '/book/edit/' . $id);
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $repositorio = $doctrine->getRepository(Book::class);
         $book = $repositorio->find($id);
 

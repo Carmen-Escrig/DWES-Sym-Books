@@ -45,6 +45,7 @@ class BookFormType extends AbstractType
                         'mimeTypesMessage' => 'Please upload a valid image file',
                     ])
                 ],
+                'required' => false,
             ])
             ->add('save', SubmitType::class, array('label' => 'Enviar'))
         ;

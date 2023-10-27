@@ -53,11 +53,11 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
 
         // For example:
 
-        $session = $request->getSession();
+        /* $session = $request->getSession();
 
-        if($session->get('redirect')) {
+         if($session->get('redirect')) {
             return new RedirectResponse($session->get('redirect'));
-        }
+        }  */
         return new RedirectResponse($this->urlGenerator->generate('inicio'));
         throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
     }
