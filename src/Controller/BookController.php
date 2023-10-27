@@ -17,6 +17,10 @@ use App\Form\ColectionFormType;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class BookController extends AbstractController
 {
@@ -59,7 +63,7 @@ class BookController extends AbstractController
     }
 
     #[Route('/book/edit/{id}', name: 'edit_book')]
-    public function edit(ManagerRegistry $doctrine, Request $request, $id, SessionInterface $session): Response
+    public function edit(ManagerRegistry $doctrine, Request $request, $id, SessionInterface $session, SluggerInterface $slugger): Response
     {
         if(!$this->getUser()) {
             $session->set('redirect', '/book/edit/' . $id);
@@ -83,6 +87,31 @@ class BookController extends AbstractController
                     ]);
                 }
                 $book = $form->getData();
+
+                $file = $form->get('file')->getData();
+                if ($file) {
+                    $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                    // this is needed to safely include the file name as part of the URL
+                    $safeFilename = $slugger->slug($originalFilename);
+                    $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+
+                    try {
+
+                        $file->move(
+                            $this->getParameter('images_directory'), $newFilename
+                        );
+                        $filesystem = new Filesystem();
+                        $filesystem->copy(
+                            $this->getParameter('images_directory') . '/'. $newFilename, 
+                            $this->getParameter('portfolio_directory') . '/'.  $newFilename, true);
+
+                    } catch (FileException $e) {
+                        return new Response("Error" . $e->getMessage());
+                    }
+                    
+                    $book->setFile($newFilename);
+                }
+
                 $entityManager = $doctrine->getManager();
                 $entityManager->persist($book);
 

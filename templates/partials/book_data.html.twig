@@ -6,6 +6,10 @@
             {% if book.colection %}
                 <li><strong>colection: </strong>{{ book.colection.name}}</li>
             {% endif %}
+
+            {% if book.file %}
+                <img src="{{ asset('images/index/' ~ book.file) }}" alt="portada" heigh="200px" width="200px" />
+            {% endif %}
             
 
         </ul>

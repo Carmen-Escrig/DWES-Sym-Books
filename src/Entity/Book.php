@@ -33,6 +33,9 @@ class Book
     #[Assert\NotBlank(message: 'El autor es obligatorio')]
     private ?Author $autor = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $file = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -95,6 +98,18 @@ class Book
     public function setAutor(?Author $autor): static
     {
         $this->autor = $autor;
+
+        return $this;
+    }
+
+    public function getFile(): ?string
+    {
+        return $this->file;
+    }
+
+    public function setFile(?string $file): static
+    {
+        $this->file = $file;
 
         return $this;
     }

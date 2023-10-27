@@ -10,6 +10,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\File;
 
 use App\Entity\Author;
 use App\Entity\Colection;
@@ -32,6 +34,18 @@ class BookFormType extends AbstractType
                 'choice_label' => 'name',
                 'placeholder' => '',
                 'required' => false,))
+            ->add('file', FileType::class,[
+                'mapped' => false,
+                'constraints' => [
+                    new File([
+                        'mimeTypes' => [
+                            'image/jpeg',
+                            'image/png',
+                        ],
+                        'mimeTypesMessage' => 'Please upload a valid image file',
+                    ])
+                ],
+            ])
             ->add('save', SubmitType::class, array('label' => 'Enviar'))
         ;
     }
